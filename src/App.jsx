@@ -164,7 +164,8 @@ const App = () => {
     fetchFunction();
   }, []);
 
-  const fetchMoreFunction = async () => {
+  const [IsLoadingMoreItems, setIsLoadingMoreItems] = useState(false);
+  const fetchMoreItems = async () => {
     try {
       const response = await fetch(
         `https://www.reddit.com/.json?after=${after}&raw_json=1`
@@ -174,27 +175,42 @@ const App = () => {
       json.data.children.forEach((newFetchedPost) => {
         setPostsData((prev) => [...prev, newFetchedPost]);
       });
+      setIsLoadingMoreItems(false);
     } catch (error) {
       setError(error);
     }
   };
-  const handelLoadMore = () => fetchMoreFunction();
+  useEffect(() => {
+    window.onscroll = () => {
+      if (
+        window.scrollY > 1000 &&
+        window.innerHeight +
+          window.scrollY -
+          document.body.scrollHeight +
+          500 >=
+          0 &&
+        !IsLoadingMoreItems
+      ) {
+        setIsLoadingMoreItems(true);
+      }
+    };
+  }, []);
+  useEffect(() => {
+    if (IsLoadingMoreItems) {
+      fetchMoreItems();
+    }
+  }, [IsLoadingMoreItems]);
 
   return (
     <div className="app">
       {IsLoading ? (
         <Loading />
       ) : (
-        <>
-          <div className="posts">
-            {postsData.map((postData, postIndex) => {
-              return <Post key={postIndex} postData={postData} />;
-            })}
-          </div>
-          <button className="button load_more" onClick={handelLoadMore}>
-            Load More Posts
-          </button>
-        </>
+        <div className="posts">
+          {postsData.map((postData, postIndex) => {
+            return <Post key={postIndex} postData={postData} />;
+          })}
+        </div>
       )}
     </div>
   );
