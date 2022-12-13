@@ -3,6 +3,36 @@ import "./App.scss";
 
 console.clear();
 
+const timeAgo = (time) => {
+  let time_ago = new Date() / 1000 - time;
+  let time_text = "s";
+  if (time_ago >= 60) {
+    time_ago = time_ago / 60;
+    time_text = "m";
+
+    if (time_ago >= 60 * 60) {
+      time_ago = time_ago / (60 * 60);
+      time_text = "h";
+
+      if (time_ago >= 60 * 60 * 24) {
+        time_ago = time_ago / (60 * 60 * 24);
+        time_text = "d";
+
+        if (time_ago >= 60 * 60 * 24 * 30.437) {
+          time_ago = time_ago / (60 * 60 * 24 * 30.437);
+          time_text = "M";
+
+          if (time_ago >= 60 * 60 * 24 * 30.437 * 12) {
+            time_ago = time_ago / (60 * 60 * 24 * 30.437 * 12);
+            time_text = "Y";
+          }
+        }
+      }
+    }
+  }
+  return `${time_ago.toFixed(0)}${time_text}`;
+};
+
 const Loading = () => {
   const [loading, setLoading] = useState("Loading");
 
@@ -99,6 +129,11 @@ const Post = ({ postData }) => {
   return (
     <div className="post" onClick={handelClick}>
       <div className="meta_info">
+        {postData.data.post_hint ? (
+          <div className="hint">{postData.data.post_hint}</div>
+        ) : (
+          ""
+        )}
         <div className="by_author">
           <div className="text">by</div>
           <a href="#" className="author">
@@ -120,6 +155,13 @@ const Post = ({ postData }) => {
       ) : (
         ""
       )}
+      {postData.data.post_hint === "link" ? (
+        <a href={postData.data.url} className="link">
+          {postData.data.url}
+        </a>
+      ) : (
+        ""
+      )}
       <div className="numbers_info">
         <div className="score">
           <ChevronUpIcon />
@@ -135,7 +177,7 @@ const Post = ({ postData }) => {
         </div>
         <div className="time_passed">
           <ClockIcon />
-          {postData.data.created}ms
+          {timeAgo(postData.data.created)}
         </div>
       </div>
     </div>
