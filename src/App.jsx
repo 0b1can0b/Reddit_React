@@ -9,28 +9,24 @@ const timeAgo = (time) => {
   if (time_ago >= 60) {
     time_ago = time_ago / 60;
     time_text = "m";
-
-    if (time_ago >= 60 * 60) {
-      time_ago = time_ago / (60 * 60);
+    if (time_ago >= 60) {
+      time_ago = time_ago / 60;
       time_text = "h";
-
-      if (time_ago >= 60 * 60 * 24) {
-        time_ago = time_ago / (60 * 60 * 24);
+      if (time_ago >= 24) {
+        time_ago = time_ago / 24;
         time_text = "d";
-
-        if (time_ago >= 60 * 60 * 24 * 30.437) {
-          time_ago = time_ago / (60 * 60 * 24 * 30.437);
+        if (time_ago >= 30.437) {
+          time_ago = time_ago / 30.437;
           time_text = "M";
-
-          if (time_ago >= 60 * 60 * 24 * 30.437 * 12) {
-            time_ago = time_ago / (60 * 60 * 24 * 30.437 * 12);
+          if (time_ago >= 12) {
+            time_ago = time_ago / 12;
             time_text = "Y";
           }
         }
       }
     }
   }
-  return `${time_ago.toFixed(0)}${time_text}`;
+  return `${time_ago.toFixed(1)}${time_text}`;
 };
 
 const Loading = () => {
@@ -134,16 +130,16 @@ const Post = ({ postData }) => {
         ) : (
           ""
         )}
-        <div className="by_author">
-          <div className="text">by</div>
-          <a href="#" className="author">
-            u/{postData.data.author}
-          </a>
-        </div>
         <div className="in_subreddit">
           <div className="text">in</div>
           <a href="#" className="subreddit">
             r/{postData.data.subreddit}
+          </a>
+        </div>
+        <div className="by_author">
+          <div className="text">by</div>
+          <a href="#" className="author">
+            u/{postData.data.author}
           </a>
         </div>
       </div>

@@ -35,6 +35,9 @@ body {
   // zoom: 2.75;
 }
 
+.loading {
+}
+
 .posts {
   display: flex;
   flex-direction: column;
@@ -56,6 +59,46 @@ body {
     transition: background-color 0.25s ease;
     &:hover {
       background-color: hsl(220 10% 20%);
+    }
+
+    .numbers_info,
+    .meta_info {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1ch;
+      @media (max-width: 425px) {
+        font-size: 0.75rem;
+      }
+    }
+
+    .meta_info {
+      .by_author,
+      .in_subreddit {
+        display: flex;
+        align-items: center;
+        gap: 1ch;
+      }
+
+      .text {
+        color: hsl(220 10% 60%);
+      }
+
+      .hint,
+      .author,
+      .subreddit {
+        color: hsl(220 20% 90%);
+        background-color: hsl(220 10% 20%);
+        padding: 0.25rem;
+        border-radius: 0.125rem;
+
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+          text-underline-offset: 0.25rem;
+        }
+      }
     }
 
     .title {
@@ -91,14 +134,17 @@ body {
       }
     }
 
-    .numbers_info,
-    .meta_info {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1ch;
-      @media (max-width: 425px) {
-        font-size: 0.75rem;
+    .link {
+      color: hsl(220 40% 60%);
+      text-decoration: none;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      word-break: break-all;
+
+      :hover {
+        text-decoration: underline;
       }
     }
 
@@ -121,48 +167,6 @@ body {
             height: 0.75rem;
           }
         }
-      }
-    }
-
-    .meta_info {
-      .by_author,
-      .in_subreddit {
-        display: flex;
-        align-items: center;
-        gap: 1ch;
-      }
-
-      .text {
-        color: hsl(220 10% 60%);
-      }
-
-      .hint,
-      .author,
-      .subreddit {
-        color: hsl(220 20% 90%);
-        background-color: hsl(220 10% 20%);
-        padding: 0.25rem;
-        border-radius: 0.125rem;
-
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-          text-underline-offset: 0.25rem;
-        }
-      }
-    }
-
-    .link {
-      color: hsl(220 40% 60%);
-      text-decoration: none;
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-
-      :hover {
-        text-decoration: underline;
       }
     }
   }
