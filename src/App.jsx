@@ -106,7 +106,7 @@ const ClockIcon = () => (
   </svg>
 );
 
-const Post = ({ postData }) => {
+const Post = ({ postData, IsActivePost }) => {
   const imgSrcSet =
     postData.data.post_hint === "image" &&
     postData.data.preview.images[0].resolutions
@@ -123,7 +123,10 @@ const Post = ({ postData }) => {
   };
 
   return (
-    <div className="post" onClick={handelClick}>
+    <div
+      className={IsActivePost ? "post active" : "post"}
+      onClick={handelClick}
+    >
       <div className="meta_info">
         {postData.data.post_hint ? (
           <div className="hint">{postData.data.post_hint}</div>
@@ -239,6 +242,35 @@ const App = () => {
     }
   }, [IsLoadingMoreItems]);
 
+  const [IsActivePost, setIsActivePost] = useState(-1);
+  useEffect(() => {
+    document.body.onkeydown = (key) => {
+      if (key.key === "f") {
+        setIsActivePost((prev) => {
+          if (prev <= document.querySelectorAll(".post").length) {
+            return prev + 1;
+          } else {
+            return prev;
+          }
+        });
+      }
+      if (key.key === "r") {
+        setIsActivePost((prev) => {
+          if (prev > 0) {
+            return prev - 1;
+          } else {
+            return prev;
+          }
+        });
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log(IsActivePost);
+    document.querySelector(".post.active").scrollIntoView();
+  }, [IsActivePost]);
+
   return (
     <div className="app">
       {IsLoading ? (
@@ -246,7 +278,13 @@ const App = () => {
       ) : (
         <div className="posts">
           {postsData.map((postData, postIndex) => {
-            return <Post key={postIndex} postData={postData} />;
+            return (
+              <Post
+                key={postIndex}
+                postData={postData}
+                IsActivePost={postIndex === IsActivePost ? true : false}
+              />
+            );
           })}
         </div>
       )}
