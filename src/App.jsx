@@ -1,4 +1,10 @@
 import { useEffect, useState } from "react";
+import {
+  HiOutlineChevronUp,
+  HiOutlineHeart,
+  HiOutlineChatBubbleLeftRight,
+  HiOutlineClock,
+} from "react-icons/hi2";
 import "./App.scss";
 
 console.clear();
@@ -47,65 +53,6 @@ const Loading = () => {
   return <div className="loading">{loading}</div>;
 };
 
-const ChevronUpIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    strokeWidth="2"
-    stroke="currentColor"
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <polyline points="6 15 12 9 18 15"></polyline>
-  </svg>
-);
-const PercentageIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    strokeWidth="2"
-    stroke="currentColor"
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <circle cx="17" cy="17" r="1"></circle>
-    <circle cx="7" cy="7" r="1"></circle>
-    <line x1="6" y1="18" x2="18" y2="6"></line>
-  </svg>
-);
-const CommentIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    strokeWidth="2"
-    stroke="currentColor"
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <path d="M4 21v-13a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-9l-4 4"></path>
-    <line x1="8" y1="9" x2="16" y2="9"></line>
-    <line x1="8" y1="13" x2="14" y2="13"></line>
-  </svg>
-);
-const ClockIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    strokeWidth="2"
-    stroke="currentColor"
-    fill="none"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-    <circle cx="12" cy="12" r="9"></circle>
-    <path d="M12 12l3 2"></path>
-    <path d="M12 7v5"></path>
-  </svg>
-);
-
 const Post = ({ postData, IsActivePost }) => {
   const imgSrcSet =
     postData.data.post_hint === "image" &&
@@ -115,8 +62,14 @@ const Post = ({ postData, IsActivePost }) => {
       })
       .join(",");
   const bgImgUrl =
-    postData.data.post_hint === "image" &&
+    (postData.data.post_hint === "image" ||
+      postData.data.post_hint === "hosted:video") &&
     `url("${postData.data.preview.images[0].resolutions[0].url}")`;
+
+  const score =
+    postData.data.score >= 1000
+      ? `${(postData.data.score / 1000).toFixed(1)}k`
+      : postData.data.score;
 
   const handelClick = () => {
     console.log(postData.data);
@@ -154,6 +107,15 @@ const Post = ({ postData, IsActivePost }) => {
       ) : (
         ""
       )}
+      {postData.data.post_hint === "hosted:video" ? (
+        <div className="video" style={{ backgroundImage: bgImgUrl }}>
+          <video controls>
+            <source src={postData.data.media.reddit_video.fallback_url} />
+          </video>
+        </div>
+      ) : (
+        ""
+      )}
       {postData.data.post_hint === "link" ? (
         <a href={postData.data.url} className="link">
           {postData.data.url}
@@ -163,20 +125,16 @@ const Post = ({ postData, IsActivePost }) => {
       )}
       <div className="numbers_info">
         <div className="score">
-          <ChevronUpIcon />
-          {postData.data.score}
+          <HiOutlineChevronUp /> {score}
         </div>
         <div className="ratio">
-          <PercentageIcon />
-          {postData.data.upvote_ratio * 100}%
+          <HiOutlineHeart /> {postData.data.upvote_ratio * 100}%
         </div>
         <div className="comments">
-          <CommentIcon />
-          {postData.data.num_comments}
+          <HiOutlineChatBubbleLeftRight /> {postData.data.num_comments}
         </div>
         <div className="time_passed">
-          <ClockIcon />
-          {timeAgo(postData.data.created)}
+          <HiOutlineClock /> {timeAgo(postData.data.created)}
         </div>
       </div>
     </div>
@@ -242,21 +200,42 @@ const App = () => {
     }
   }, [IsLoadingMoreItems]);
 
-  const [IsActivePost, setIsActivePost] = useState(-1);
+  const [activePostIndex, setActivePostIndex] = useState(-1);
+  const [DoScroll, setDoScroll] = useState(false);
   useEffect(() => {
     document.body.onkeydown = (key) => {
       if (key.key === "f") {
-        setIsActivePost((prev) => {
+        setActivePostIndex((prev) => {
           if (prev <= document.querySelectorAll(".post").length) {
+            setDoScroll(true);
             return prev + 1;
           } else {
             return prev;
           }
         });
+        if (
+          window.scrollY > 1000 &&
+          window.innerHeight +
+            window.scrollY -
+            document.body.scrollHeight +
+            500 >=
+            0 &&
+          !IsLoadingMoreItems
+        ) {
+          setIsLoadingMoreItems(true);
+        }
       }
       if (key.key === "r") {
-        setIsActivePost((prev) => {
+        setActivePostIndex((prev) => {
           if (prev > 0) {
+            setDoScroll(true);
+            if (
+              window.scrollY >
+              document.querySelectorAll(".post")[prev].offsetTop + 16
+            ) {
+              document.querySelector(".post.active").scrollIntoView();
+              return prev;
+            }
             return prev - 1;
           } else {
             return prev;
@@ -267,9 +246,26 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log(IsActivePost);
-    document.querySelector(".post.active").scrollIntoView();
-  }, [IsActivePost]);
+    if (DoScroll) {
+      document.body.onscroll = () => {};
+      setDoScroll(false);
+    } else {
+      document.body.onscroll = () => {
+        document.querySelectorAll(".post").forEach((post, postIndex) => {
+          if (post.offsetTop < window.scrollY + 16)
+            setActivePostIndex(postIndex);
+        });
+      };
+    }
+  }, [DoScroll]);
+
+  useEffect(() => {
+    if (DoScroll) {
+      if (document.querySelector(".post.active")) {
+        document.querySelector(".post.active").scrollIntoView();
+      }
+    }
+  }, [activePostIndex]);
 
   return (
     <div className="app">
@@ -282,7 +278,7 @@ const App = () => {
               <Post
                 key={postIndex}
                 postData={postData}
-                IsActivePost={postIndex === IsActivePost ? true : false}
+                IsActivePost={postIndex === activePostIndex ? true : false}
               />
             );
           })}

@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&display=swap");
 
 html,
 body {
@@ -9,8 +10,7 @@ body {
 body {
   background-color: hsl(220 10% 10%);
   color: hsl(220 20% 80%);
-  // font-family: Spline Sans Mono;
-  font-family: segoe ui;
+  font-family: Spline Sans;
   line-height: 1;
 }
 
@@ -42,7 +42,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: min(540px, 100%);
+  width: min(40rem, 100%);
   align-self: center;
 
   .post {
@@ -56,15 +56,11 @@ body {
     gap: 0.75rem;
 
     scroll-margin-top: 1rem;
-    &.active {
-      outline: 2px solid hsl(140 50% 50%);
-      outline-offset: 2px;
-    }
 
     cursor: pointer;
     transition: background-color 0.25s ease;
     &:hover {
-      background-color: hsl(220 10% 20%);
+      background-color: hsl(220 10% 17.5%);
     }
 
     .numbers_info,
@@ -72,7 +68,7 @@ body {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1ch;
+      gap: 0.5ch;
       @media (max-width: 425px) {
         font-size: 0.75rem;
       }
@@ -83,7 +79,7 @@ body {
       .in_subreddit {
         display: flex;
         align-items: center;
-        gap: 1ch;
+        gap: 0.5ch;
       }
 
       .text {
@@ -136,11 +132,35 @@ body {
 
       img {
         max-width: 100%;
-        max-height: 40vh;
+        max-height: 60vh;
+      }
+    }
+
+    .video {
+      width: calc(100% + 2rem);
+      margin: 0 -1rem;
+      text-align: center;
+      background-size: cover;
+      background-position: center center;
+
+      isolation: isolate;
+      position: relative;
+      &:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        backdrop-filter: brightness(0.75) blur(7.5px);
+        z-index: -1;
+      }
+
+      video {
+        max-width: 100%;
+        max-height: 60vh;
       }
     }
 
     .link {
+      line-height: 1.5;
       color: hsl(220 40% 60%);
       text-decoration: none;
       display: -webkit-box;
@@ -155,18 +175,19 @@ body {
     }
 
     .numbers_info {
-      gap: 1.25ch;
-      width: 100%;
-      justify-content: space-around;
+      gap: 1.5ch;
+      // width: 100%;
+      // justify-content: space-around;
+      align-self: flex-end;
 
       & > * {
         display: flex;
         align-items: center;
-        gap: 0.25ch;
+        gap: 0.5ch;
 
         svg {
-          width: 1.25rem;
-          height: 1.25rem;
+          width: 1.125rem;
+          height: 1.125rem;
           color: hsl(220 20% 90%);
           @media (max-width: 425px) {
             width: 0.75rem;
