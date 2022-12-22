@@ -35,8 +35,8 @@ body {
   // zoom: 2.75;
 }
 
-.loading {
-}
+// .loading {
+// }
 
 .posts {
   display: flex;
@@ -209,6 +209,28 @@ body {
     transition: 0.25s ease;
     &:hover {
       background-color: hsl(220 10% 15%);
+    }
+  }
+}
+
+.posts {
+  counter-reset: count;
+
+  .post {
+    position: relative;
+
+    &:first-of-type:before {
+      counter-set: count;
+    }
+
+    &:before {
+      color: hsl(220 20% 60%);
+      font-family: spline sans mono;
+      content: counter(count);
+      position: absolute;
+      right: 1rem;
+      counter-increment: count;
+      padding: 0.25rem;
     }
   }
 }

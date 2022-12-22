@@ -201,18 +201,29 @@ const App = () => {
   }, [IsLoadingMoreItems]);
 
   const [activePostIndex, setActivePostIndex] = useState(-1);
-  const [DoScroll, setDoScroll] = useState(false);
+
+  const getPrevActivePostIndex = () => {
+    let tempArr = [];
+    document.querySelectorAll(".post").forEach((post, postIndex) => {
+      if (post.offsetTop < window.scrollY + 18) {
+        tempArr.push(postIndex);
+      }
+    });
+    return tempArr[tempArr.length - 1] ?? 0;
+  };
+
   useEffect(() => {
     document.body.onkeydown = (key) => {
       if (key.key === "f") {
-        setActivePostIndex((prev) => {
-          if (prev <= document.querySelectorAll(".post").length) {
-            setDoScroll(true);
-            return prev + 1;
-          } else {
-            return prev;
+        const prev = getPrevActivePostIndex();
+
+        if (prev <= document.querySelectorAll(".post").length) {
+          if (activePostIndex === prev + 1) {
+            document.querySelector(".post.active").scrollIntoView();
           }
-        });
+          setActivePostIndex(prev + 1);
+        }
+
         if (
           window.scrollY > 1000 &&
           window.innerHeight +
@@ -226,44 +237,30 @@ const App = () => {
         }
       }
       if (key.key === "r") {
-        setActivePostIndex((prev) => {
-          if (prev > 0) {
-            setDoScroll(true);
-            if (
-              window.scrollY >
-              document.querySelectorAll(".post")[prev].offsetTop + 16
-            ) {
+        const prev = getPrevActivePostIndex();
+
+        if (prev > 0) {
+          console.log(prev);
+          if (
+            window.scrollY >
+            document.querySelectorAll(".post")[prev].offsetTop + 16
+          ) {
+            if (activePostIndex === prev) {
               document.querySelector(".post.active").scrollIntoView();
-              return prev;
+            } else {
+              setActivePostIndex(prev);
             }
-            return prev - 1;
           } else {
-            return prev;
+            setActivePostIndex(prev - 1);
           }
-        });
+        }
       }
     };
-  }, []);
+  }, [activePostIndex]);
 
   useEffect(() => {
-    if (DoScroll) {
-      document.body.onscroll = () => {};
-      setDoScroll(false);
-    } else {
-      document.body.onscroll = () => {
-        document.querySelectorAll(".post").forEach((post, postIndex) => {
-          if (post.offsetTop < window.scrollY + 16)
-            setActivePostIndex(postIndex);
-        });
-      };
-    }
-  }, [DoScroll]);
-
-  useEffect(() => {
-    if (DoScroll) {
-      if (document.querySelector(".post.active")) {
-        document.querySelector(".post.active").scrollIntoView();
-      }
+    if (document.querySelector(".post.active")) {
+      document.querySelector(".post.active").scrollIntoView();
     }
   }, [activePostIndex]);
 
