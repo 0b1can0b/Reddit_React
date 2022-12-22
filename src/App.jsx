@@ -240,7 +240,6 @@ const App = () => {
         const prev = getPrevActivePostIndex();
 
         if (prev > 0) {
-          console.log(prev);
           if (
             window.scrollY >
             document.querySelectorAll(".post")[prev].offsetTop + 16
